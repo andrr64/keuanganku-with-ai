@@ -1,6 +1,6 @@
-use rusqlite::{params, Result};
 use crate::db::DB_CONNECTION;
 use crate::models::account::Account;
+use rusqlite::{params, Result};
 
 /// Membuat entri akun baru di database.
 pub fn create(name: &str, description: Option<&str>, balance: f64) -> Result<(), String> {
@@ -19,7 +19,7 @@ pub fn find_all() -> Result<Vec<Account>, String> {
     let mut stmt = conn
         .prepare("SELECT id, name, description, balance FROM accounts")
         .map_err(|e| e.to_string())?;
-    
+
     let account_iter = stmt
         .query_map([], |row| {
             Ok(Account {
@@ -31,7 +31,8 @@ pub fn find_all() -> Result<Vec<Account>, String> {
         })
         .map_err(|e| e.to_string())?;
 
-    account_iter.collect::<rusqlite::Result<Vec<Account>>>()
+    account_iter
+        .collect::<rusqlite::Result<Vec<Account>>>()
         .map_err(|e| e.to_string())
 }
 
@@ -67,10 +68,7 @@ pub fn update(id: i64, name: &str, description: Option<&str>, balance: f64) -> R
 /// Menghapus data akun dari database berdasarkan ID.
 pub fn delete(id: i64) -> Result<(), String> {
     let conn = DB_CONNECTION.lock().unwrap();
-    conn.execute(
-        "DELETE FROM accounts WHERE id = ?1",
-        params![id],
-    )
-    .map(|_| ())
-    .map_err(|e| e.to_string())
+    conn.execute("DELETE FROM accounts WHERE id = ?1", params![id])
+        .map(|_| ())
+        .map_err(|e| e.to_string())
 }

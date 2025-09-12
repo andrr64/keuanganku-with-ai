@@ -1,5 +1,5 @@
-use serde::Serialize;
 use chrono::NaiveDateTime;
+use serde::Serialize;
 
 /// Merepresentasikan satu entri pengeluaran.
 #[derive(Serialize, Debug)]

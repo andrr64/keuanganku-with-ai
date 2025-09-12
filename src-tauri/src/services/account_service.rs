@@ -13,7 +13,7 @@ pub fn create_account(name: &str, description: Option<&str>, balance: f64) -> Re
     if balance < 0.0 {
         return Err("Saldo awal tidak boleh negatif.".to_string());
     }
-    
+
     // Panggil repository untuk menyimpan data.
     account_repository::create(name, description, balance)
 }
@@ -29,7 +29,12 @@ pub fn get_account_by_id(id: i64) -> Result<Account, String> {
 }
 
 /// Memperbarui akun yang ada.
-pub fn update_account(id: i64, name: &str, description: Option<&str>, balance: f64) -> Result<(), String> {
+pub fn update_account(
+    id: i64,
+    name: &str,
+    description: Option<&str>,
+    balance: f64,
+) -> Result<(), String> {
     // Validasi tambahan bisa diletakkan di sini.
     if name.trim().is_empty() {
         return Err("Nama akun tidak boleh kosong.".to_string());

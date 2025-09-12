@@ -1,6 +1,6 @@
+use lazy_static::lazy_static;
 use rusqlite::{Connection, Result};
 use std::sync::Mutex;
-use lazy_static::lazy_static;
 
 // Mengganti nama database agar lebih relevan
 lazy_static! {
@@ -39,7 +39,6 @@ const CREATE_EXPENSES_TABLE: &str = r#"
     )
 "#;
 
-
 // Fungsi untuk inisialisasi & migrasi database
 pub fn init_database() -> Result<()> {
     let conn = DB_CONNECTION.lock().unwrap();
@@ -50,6 +49,6 @@ pub fn init_database() -> Result<()> {
     conn.execute(CREATE_CATEGORIES_TABLE, [])?;
     conn.execute(CREATE_INCOME_TABLE, [])?;
     conn.execute(CREATE_EXPENSES_TABLE, [])?;
-    
+
     Ok(())
 }

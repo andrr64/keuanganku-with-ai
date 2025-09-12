@@ -1,8 +1,8 @@
+use crate::db::DB_CONNECTION;
+use crate::models::category::{Category, CategoryType};
 use rusqlite::{params, Result};
 use std::error::Error;
 use std::fmt;
-use crate::db::DB_CONNECTION;
-use crate::models::category::{Category, CategoryType};
 
 // Definisikan struct error kustom untuk konversi yang gagal.
 #[derive(Debug)]
@@ -17,7 +17,6 @@ impl fmt::Display for InvalidCategoryTypeError {
 
 // Implementasikan trait Error agar struct ini bisa digunakan sebagai error.
 impl Error for InvalidCategoryTypeError {}
-
 
 // Implementasi konversi dari i16 (nilai dari DB) ke enum CategoryType.
 // Sekarang menggunakan tipe error kustom.
@@ -52,14 +51,19 @@ pub fn find_all() -> Result<Vec<Category>, String> {
     let mut stmt = conn
         .prepare("SELECT id, name, category_type FROM categories")
         .map_err(|e| e.to_string())?;
-    
+
     let category_iter = stmt
         .query_map([], |row| {
             let type_val: i16 = row.get(2)?;
             // Sekarang `e` adalah tipe error kustom kita yang mengimplementasikan `Error`,
             // sehingga `Box::new(e)` valid.
-            let category_type = CategoryType::try_from(type_val)
-                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(2, rusqlite::types::Type::Integer, Box::new(e)))?;
+            let category_type = CategoryType::try_from(type_val).map_err(|e| {
+                rusqlite::Error::FromSqlConversionFailure(
+                    2,
+                    rusqlite::types::Type::Integer,
+                    Box::new(e),
+                )
+            })?;
 
             Ok(Category {
                 id: row.get(0)?,
@@ -69,7 +73,8 @@ pub fn find_all() -> Result<Vec<Category>, String> {
         })
         .map_err(|e| e.to_string())?;
 
-    category_iter.collect::<rusqlite::Result<Vec<Category>>>()
+    category_iter
+        .collect::<rusqlite::Result<Vec<Category>>>()
         .map_err(|e| e.to_string())
 }
 
@@ -81,8 +86,13 @@ pub fn find_by_id(id: i64) -> Result<Category, String> {
         params![id],
         |row| {
             let type_val: i16 = row.get(2)?;
-            let category_type = CategoryType::try_from(type_val)
-                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(2, rusqlite::types::Type::Integer, Box::new(e)))?;
+            let category_type = CategoryType::try_from(type_val).map_err(|e| {
+                rusqlite::Error::FromSqlConversionFailure(
+                    2,
+                    rusqlite::types::Type::Integer,
+                    Box::new(e),
+                )
+            })?;
 
             Ok(Category {
                 id: row.get(0)?,
@@ -108,11 +118,7 @@ pub fn update(id: i64, name: &str, category_type: CategoryType) -> Result<(), St
 /// Menghapus data kategori dari database berdasarkan ID.
 pub fn delete(id: i64) -> Result<(), String> {
     let conn = DB_CONNECTION.lock().unwrap();
-    conn.execute(
-        "DELETE FROM categories WHERE id = ?1",
-        params![id],
-    )
-    .map(|_| ())
-    .map_err(|e| e.to_string())
+    conn.execute("DELETE FROM categories WHERE id = ?1", params![id])
+        .map(|_| ())
+        .map_err(|e| e.to_string())
 }
-

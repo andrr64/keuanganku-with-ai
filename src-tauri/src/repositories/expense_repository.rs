@@ -1,12 +1,17 @@
-use rusqlite::{params, Result};
-use chrono::NaiveDateTime; // Diubah dari NaiveDate ke NaiveDateTime
 use crate::db::DB_CONNECTION;
 use crate::models::expense::Expense;
+use chrono::NaiveDateTime; // Diubah dari NaiveDate ke NaiveDateTime
+use rusqlite::{params, Result};
 
 /// Membuat entri pengeluaran baru di database.
-pub fn create(description: &str, amount: f64, date: NaiveDateTime, category_id: i64) -> Result<(), String> {
+pub fn create(
+    description: &str,
+    amount: f64,
+    date: NaiveDateTime,
+    category_id: i64,
+) -> Result<(), String> {
     let conn = DB_CONNECTION.lock().unwrap();
-    
+
     // Simpan datetime sebagai string dengan format YYYY-MM-DD HH:MM:SS
     let date_str = date.format("%Y-%m-%d %H:%M:%S").to_string();
 
@@ -24,13 +29,19 @@ pub fn find_all() -> Result<Vec<Expense>, String> {
     let mut stmt = conn
         .prepare("SELECT id, description, amount, date, category_id FROM expenses")
         .map_err(|e| e.to_string())?;
-    
+
     let expense_iter = stmt
         .query_map([], |row| {
             // Kolom date disimpan sebagai TEXT, perlu di-parse kembali ke NaiveDateTime.
             let date_str: String = row.get(3)?;
-            let date = NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S")
-                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(3, rusqlite::types::Type::Text, Box::new(e)))?;
+            let date =
+                NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S").map_err(|e| {
+                    rusqlite::Error::FromSqlConversionFailure(
+                        3,
+                        rusqlite::types::Type::Text,
+                        Box::new(e),
+                    )
+                })?;
 
             Ok(Expense {
                 id: row.get(0)?,
@@ -42,9 +53,10 @@ pub fn find_all() -> Result<Vec<Expense>, String> {
         })
         .map_err(|e| e.to_string())?;
 
-    let expenses = expense_iter.collect::<rusqlite::Result<Vec<Expense>>>()
+    let expenses = expense_iter
+        .collect::<rusqlite::Result<Vec<Expense>>>()
         .map_err(|e| e.to_string())?;
-        
+
     Ok(expenses)
 }
 
@@ -57,8 +69,14 @@ pub fn find_by_id(id: i64) -> Result<Expense, String> {
         |row| {
             // Kolom date disimpan sebagai TEXT, perlu di-parse kembali ke NaiveDateTime.
             let date_str: String = row.get(3)?;
-            let date = NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S")
-                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(3, rusqlite::types::Type::Text, Box::new(e)))?;
+            let date =
+                NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S").map_err(|e| {
+                    rusqlite::Error::FromSqlConversionFailure(
+                        3,
+                        rusqlite::types::Type::Text,
+                        Box::new(e),
+                    )
+                })?;
 
             Ok(Expense {
                 id: row.get(0)?,
@@ -73,7 +91,13 @@ pub fn find_by_id(id: i64) -> Result<Expense, String> {
 }
 
 /// Memperbarui data pengeluaran yang ada di database.
-pub fn update(id: i64, description: &str, amount: f64, date: NaiveDateTime, category_id: i64) -> Result<(), String> {
+pub fn update(
+    id: i64,
+    description: &str,
+    amount: f64,
+    date: NaiveDateTime,
+    category_id: i64,
+) -> Result<(), String> {
     let conn = DB_CONNECTION.lock().unwrap();
     let date_str = date.format("%Y-%m-%d %H:%M:%S").to_string();
 
@@ -88,10 +112,7 @@ pub fn update(id: i64, description: &str, amount: f64, date: NaiveDateTime, cate
 /// Menghapus data pengeluaran dari database berdasarkan ID.
 pub fn delete(id: i64) -> Result<(), String> {
     let conn = DB_CONNECTION.lock().unwrap();
-    conn.execute(
-        "DELETE FROM expenses WHERE id = ?1",
-        params![id],
-    )
-    .map(|_| ()) // Mengubah hasil dari execute menjadi ()
-    .map_err(|e| e.to_string())
+    conn.execute("DELETE FROM expenses WHERE id = ?1", params![id])
+        .map(|_| ()) // Mengubah hasil dari execute menjadi ()
+        .map_err(|e| e.to_string())
 }
