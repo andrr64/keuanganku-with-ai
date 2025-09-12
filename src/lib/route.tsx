@@ -1,4 +1,4 @@
-import { CreditCard, DollarSign, FolderKanban, Settings } from "lucide-react";
+import { CreditCard, DollarSign, FolderKanban, Settings, MessageSquare } from "lucide-react";
 
 export const ROUTES = {
   EXPENSE: {
@@ -20,5 +20,10 @@ export const ROUTES = {
     url: "/settings",
     label: "Settings",
     icon: <Settings size={18} />,
+  },
+  CHAT_AI: {
+    url: "/chat-ai",
+    label: "Chat with AI",
+    icon: <MessageSquare size={18} />,
   },
 };

@@ -8,12 +8,12 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
     return (
-        <div id="rootElement" className="flex h-screen">
+        <div id="rootElement" className="font-sans flex h-screen">
             {/* Sidebar */}
             <Sidebar />
 
             {/* Content */}
-            <main className="flex-1 p-4 overflow-auto">
+            <main className="flex-1 overflow-auto">
                 {children}
             </main>
         </div>

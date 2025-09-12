@@ -1,22 +1,46 @@
 import { Sun, Moon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ThemeSwitch() {
     const [theme, setTheme] = useState<"light" | "dark">("light");
 
+    // Load saved theme on mount
+    useEffect(() => {
+        const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+        const initialTheme = savedTheme || "light";
+        setTheme(initialTheme);
+        document.documentElement.classList.toggle("dark", initialTheme === "dark");
+    }, []);
+
     const onToggle = () => {
         const newTheme = theme === "light" ? "dark" : "light";
         setTheme(newTheme);
-        document.getElementById("rootElement")?.classList.toggle("dark");
+        localStorage.setItem("theme", newTheme);
+        document.documentElement.classList.toggle("dark", newTheme === "dark");
     };
 
     return (
-        <button
-            type="button"
-            onClick={onToggle}
-            className="p-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition"
-        >
-            {theme === "dark" ? <Moon size={20} /> : <Sun size={20} />}
-        </button>
+        <div className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
+            <span className="font-medium text-sm text-gray-700 dark:text-gray-300">
+                Theme
+            </span>
+
+            <button
+                onClick={onToggle}
+                className="relative inline-flex h-6 w-12 items-center rounded-full
+                           bg-[#1E3A8A] dark:bg-gray-600 transition-colors duration-300"
+            >
+                <span
+                    className={`absolute left-1 flex h-4 w-4 items-center justify-center rounded-full bg-white shadow-md transform transition-transform duration-300
+                    ${theme === "dark" ? "translate-x-6" : "translate-x-0"}`}
+                >
+                    {theme === "dark" ? (
+                        <Moon size={12} className="text-[#1E3A8A]" />
+                    ) : (
+                        <Sun size={12} className="text-yellow-500" />
+                    )}
+                </span>
+            </button>
+        </div>
     );
 }
