@@ -114,7 +114,7 @@ export default function ExpenseTable() {
             </div>
 
             {/* Table */}
-            <div className="overflow-y-auto overflow-x-auto border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg" style={{ minHeight: "360px" }}>
+            <div className="overflow-y-auto overflow-x-auto border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg" style={{ height: "480px" }}>
                 <table className="min-w-full text-xs sm:text-sm">
                     <thead className="sticky top-0 z-10">
                         <tr className="bg-gray-100 dark:bg-gray-700">

@@ -41,7 +41,7 @@ const formatCurrency = (value: number): string =>
         currency: "USD",
     }).format(value / 15000);
 
-export default function WeeklyTrendChart() {
+export default function WeeklyExpenseTrendChart() {
     const [isDark, setIsDark] = useState(false);
 
     useEffect(() => {

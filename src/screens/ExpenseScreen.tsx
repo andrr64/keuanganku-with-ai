@@ -2,7 +2,7 @@ import { Plus } from "lucide-react";
 import ExpenseDistribution from "./components/ExpenseDistributionChart";
 import ExpenseSummary from "./components/ExpenseSummaryCard";
 import ExpenseTable from "./components/ExpenseTable";
-import WeeklyTrendChart from "./components/ExpenseWeeklyChart";
+import WeeklyExpenseTrendChart from "./components/ExpenseWeeklyChart";
 
 function HeaderComponent() {
   return (
@@ -41,14 +41,20 @@ function ExpenseScreen() {
         {/* Tabel & distribusi */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="lg:col-span-1">
-            <WeeklyTrendChart />
+            <WeeklyExpenseTrendChart />
           </div>
           <div className="lg:col-span-1">
             <ExpenseDistribution />
           </div>
         </div>
 
-        <ExpenseTable />
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-2">
+            <ExpenseTable />
+          </div>
+          <div className="lg:col-span-2">
+          </div>
+        </div>
       </main>
     </div>
   );
