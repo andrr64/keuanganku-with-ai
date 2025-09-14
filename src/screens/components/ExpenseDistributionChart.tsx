@@ -1,12 +1,5 @@
 import { useMemo } from "react";
-import {
-    PieChart,
-    Pie,
-    Cell,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 // --- TYPE DEFINITIONS ---
 interface Expense {
@@ -40,10 +33,7 @@ const dummyData: Expense[] = [
 
 // --- Helper function for currency formatting ---
 const formatCurrency = (value: number): string =>
-    new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-    }).format(value / 15000);
+    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value / 15000);
 
 export default function ExpenseDistribution() {
     const { chartData, totalSpent } = useMemo(() => {
@@ -53,51 +43,46 @@ export default function ExpenseDistribution() {
             return acc;
         }, {} as Record<string, number>);
 
-        const chartData: ChartData[] = Object.keys(dataByCategory).map(
-            (category) => ({
-                name: category,
-                value: dataByCategory[category],
-            })
-        );
+        const chartData: ChartData[] = Object.keys(dataByCategory).map(category => ({
+            name: category,
+            value: dataByCategory[category],
+        }));
 
         const totalSpent = dummyData.reduce((sum, item) => sum + item.amount, 0);
 
         return { chartData, totalSpent };
     }, []);
 
-    const COLORS = [
-        "#0088FE",
-        "#00C49F",
-        "#FFBB28",
-        "#FF8042",
-        "#AF19FF",
-        "#FF1919",
-        "#19FFFF",
-    ];
+    const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF", "#FF1919", "#19FFFF"];
 
     const renderLegend = (value: string, entry: any) => {
         const itemValue = entry.payload.value;
         return (
             <span className="text-gray-600 dark:text-gray-300 text-sm">
                 {value}:{" "}
-                <span className="font-semibold">{formatCurrency(itemValue)}</span>
+                <span className="font-semibold text-red-600 dark:text-red-400">
+                    {formatCurrency(itemValue)}
+                </span>
             </span>
         );
     };
 
     return (
-        <div className="w-full bg-white dark:bg-gray-800 rounded-2xl shadow-md p-4 sm:p-6 transition-colors h-full flex flex-col">
+        <div className="w-full bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-md p-4 sm:p-6 transition-colors h-full flex flex-col">
             <header className="mb-6">
-                <h1 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100">
-                    Distribution
+                <h1 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
+                    Expense Distribution
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
                     Visualization by category
                 </p>
             </header>
 
-            {/* Chart */}
-            <div className="flex-grow flex items-center justify-center" style={{ minHeight: "280px" }}>
+            <div className="relative flex-grow flex items-center justify-center" style={{ minHeight: "300px" }}>
+                <div className="absolute text-center pointer-events-none">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Total Spent</p>
+                    <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(totalSpent)}</p>
+                </div>
                 <ResponsiveContainer>
                     <PieChart>
                         <Pie
@@ -106,30 +91,19 @@ export default function ExpenseDistribution() {
                             cy="50%"
                             labelLine={false}
                             outerRadius={100}
-                            innerRadius={70}
+                            innerRadius={70}    
                             dataKey="value"
                             nameKey="name"
                             label={({ percent }: any) => `${(percent * 100).toFixed(0)}%`}
                         >
                             {chartData.map((entry, index) => (
-                                <Cell
-                                    key={`cell-${index}`}
-                                    fill={COLORS[index % COLORS.length]}
-                                />
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                             ))}
                         </Pie>
                         <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                        <Legend formatter={renderLegend} />
+                        <Legend formatter={renderLegend} verticalAlign="bottom" />
                     </PieChart>
                 </ResponsiveContainer>
-            </div>
-
-            {/* Total Spent (di bawah legend) */}
-            <div className="mt-4 text-center border-t border-gray-200 dark:border-gray-700 pt-4">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Total Spent</p>
-                <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                    {formatCurrency(totalSpent)}
-                </p>
             </div>
         </div>
     );

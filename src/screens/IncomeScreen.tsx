@@ -25,7 +25,6 @@ export default function IncomeScreen() {
               <MonthlyIncomeTrendChart />
             </div>
           </div>
-
         </div>
       </main>
     </div>

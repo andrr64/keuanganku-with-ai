@@ -65,7 +65,8 @@ export default function IncomeTable() {
     }, [sortKey, sortOrder, filterSource, search]);
 
     return (
-        <div className="w-full h-full  bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-md p-4 sm:p-6 transition-colors">
+        <div className="h-full w-full bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-md p-4 sm:p-6 transition-colors flex flex-col">
+            {/* Header */}
             <header className="mb-6">
                 <h1 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">Records</h1>
                 <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
@@ -73,6 +74,7 @@ export default function IncomeTable() {
                 </p>
             </header>
 
+            {/* Controls */}
             <div className="flex flex-col sm:flex-row justify-between mb-6 gap-4">
                 <div className="flex flex-col w-full sm:w-1/2">
                     <label className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-1 flex items-center gap-1">
@@ -103,7 +105,8 @@ export default function IncomeTable() {
                 </div>
             </div>
 
-            <div className="overflow-auto border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg " style={{height: '512px'}}>
+            {/* Table */}
+            <div className="flex-grow overflow-auto border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg max-h-[70vh]">
                 <table className="min-w-full text-xs sm:text-sm">
                     <thead className="sticky top-0 z-10">
                         <tr className="bg-gray-100 dark:bg-gray-700">
@@ -120,8 +123,7 @@ export default function IncomeTable() {
                                     }}
                                     className="px-3 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 dark:text-gray-300 cursor-pointer select-none capitalize"
                                 >
-                                    {key}{" "}
-                                    {sortKey === key && (sortOrder === "asc" ? "↑" : "↓")}
+                                    {key} {sortKey === key && (sortOrder === "asc" ? "↑" : "↓")}
                                 </th>
                             ))}
                         </tr>
@@ -138,7 +140,6 @@ export default function IncomeTable() {
                                 <td className="px-3 sm:px-4 py-2 sm:py-3 font-semibold text-green-600 dark:text-green-400 whitespace-nowrap">
                                     {formatCurrency(item.amount)}
                                 </td>
-
                                 <td className="px-3 sm:px-4 py-2 sm:py-3 text-gray-700 dark:text-gray-300">
                                     <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-xs">
                                         {item.source}
