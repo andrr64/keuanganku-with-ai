@@ -1,9 +1,10 @@
-import { Search, LogOut } from "lucide-react";
+import { Search, LogOut, HomeIcon } from "lucide-react";
 import { exit } from "@tauri-apps/plugin-process";
 import { CreditCard, DollarSign, FolderKanban, Settings, MessageSquare } from "lucide-react";
 import ThemeSwitch from "./ThemeSwitch";
 
 export const ROUTES = [
+    { label: "Home", icon: <HomeIcon size={18} /> },
     { label: "Expense", icon: <CreditCard size={18} /> },
     { label: "Income", icon: <DollarSign size={18} /> },
     { label: "Category", icon: <FolderKanban size={18} /> },
