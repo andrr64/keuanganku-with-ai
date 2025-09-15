@@ -1,10 +1,14 @@
+import { invoke } from "@tauri-apps/api/core";
+import { useModalState } from "../hooks/modalState";
 import { Transaction } from "../types/transaction";
+import AccountList from "./components/AccountList";
 import BalanceOverview from "./components/BalanceCard";
 import ExpenseDistribution from "./components/ExpenseDistributionChart";
 import FinancialTrendChart from "./components/FinancialTrendChart";
 import NavigationCards from "./components/HomeScreenNavigationCard";
 import RecentTransactions from "./components/RecentTransaction";
 import TopSpendingCategories from "./components/TopSpendingCategories";
+import AddAccountModal, { AccountFormData } from "./modals/AddAccountModal";
 
 interface HomeScreenProps {
     onChange: (view: string) => void;
@@ -37,30 +41,41 @@ const HomeScreen = ({ onChange }: HomeScreenProps) => {
         { type: 'income', date: "2025-04-01T09:00:00Z", description: "Monthly Salary", amount: 7500000 },
     ];
 
-    return (
-        <div className="min-h-screen">
-            <header className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
-                <p className="text-md text-gray-600 dark:text-gray-400">Your financial summary at a glance.</p>
-            </header>
-            <main className="space-y-6">
-                <BalanceOverview data={dummyTransactions} />
+    const modalAddAcount = useModalState();
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="lg:col-span-1">
-                        <FinancialTrendChart data={dummyTransactions} />
+    return (
+        <>
+            <AddAccountModal
+                isOpen={modalAddAcount.isOpen}
+                onClose={modalAddAcount.close}
+                onSave={async (data) => {
+                    const result = await invoke('add_account', { accountData: data as AccountFormData });
+
+                }} />
+            <div className="min-h-screen">
+                <header className="mb-8">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
+                    <p className="text-md text-gray-600 dark:text-gray-400">Your financial summary at a glance.</p>
+                </header>
+                <main className="space-y-6">
+                    <BalanceOverview data={dummyTransactions} />
+                    <AccountList onAccountAdd={modalAddAcount.open} />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="lg:col-span-1">
+                            <FinancialTrendChart data={dummyTransactions} />
+                        </div>
+                        <div className="lg:col-span-1">
+                            <ExpenseDistribution />
+                        </div>
                     </div>
-                    <div className="lg:col-span-1">
-                        <ExpenseDistribution />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <TopSpendingCategories data={dummyTransactions} />
+                        <RecentTransactions data={dummyTransactions} />
+                        <NavigationCards onChange={onChange} />
                     </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <TopSpendingCategories data={dummyTransactions} />
-                    <RecentTransactions data={dummyTransactions} />
-                    <NavigationCards onChange={onChange} />
-                </div>
-            </main >
-        </div >
+                </main >
+            </div >
+        </>
     );
 }
 
